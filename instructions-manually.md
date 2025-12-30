@@ -275,3 +275,58 @@ sudo sysctl --system
 This will help avoiding some routing issues between your LAN devices and the control plane node. Specifically, by doing this, you disable reverse path filtering on a Wi-Fi interface, allowing Cilium’s NodePort return traffic to survive asymmetric routing after backend changes.
 
 This is specially useful when you want to test connectivity (e.g., running a nginx webserver and hitting http://<any-node-ip-address>:<exposed-port> from your PC).
+
+### 5a. ArgoCD
+
+We will install ArgoCD using Helm.
+
+```
+kubectl create namespace argocd
+
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+
+helm upgrade --install argocd argo/argo-cd \
+  --namespace argocd
+
+kubectl patch svc argocd-server -n argocd \
+  -p '{"spec":{"type":"NodePort"}}'
+
+```
+
+Now we login to ArgoCD from our PC by entering the IP address of any node and the specified port for argo (`kubectl get svc argocd-server -n argocd`) in our browser. Change the password and delete the secret from k8s: `kubectl -n argocd delete secret argocd-initial-admin-secret`.
+
+### 5b. SealedSecrets
+
+```
+kubectl create namespace apps
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm upgrade --install sealed-secrets bitnami/sealed-secrets \
+  -n kube-system
+```
+Verify:
+```
+kubectl -n kube-system get pods -l app.kubernetes.io/name=sealed-secrets
+```
+
+### If you need to create a sealed secret to commit to a repo
+In your PC, run:
+```
+kubectl create secret generic <arbitrary-app-related-secrets> \
+  --from-literal=KEY=VALUE \
+  --dry-run=client -o yaml > secrets.plain.yaml
+```
+That will create a base64 encoded secret and display it to you without transmiting anything to the server (hence `--dry-run=client`). You cannot commit this to a repo, because you're not stupid. Let's use sealed secrets locally to seal it properly. Also in your PC, run:
+```
+choco/brew install sealed-secrets
+```
+```
+kubeseal \
+  --format yaml \
+  --controller-name sealed-secrets \
+  --controller-namespace kube-system \
+  --namespace apps \
+  < secrets.plain.yaml \
+  > your-app/k8s/overlays/prod/sealedsecret-app-secret.yaml
+```
