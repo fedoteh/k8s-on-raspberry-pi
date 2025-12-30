@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: apps
+
+resources:
+  - github.com/fedoteh/telegram-boty//k8s/base?ref=main
+  - sealedsecret-bot-token.yaml
+  - sealedsecret-bot-config.yaml
+
+images:
+  - name: fedoteh/telegram-boty
+    newTag: "v0.1.3"
