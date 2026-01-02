@@ -5,6 +5,9 @@
 - Willingness to suffer a little bit—hopefully lesser with this guide
 - Fixed IP addresses for your Pi's. Fiddle around with your router DHCP config to achieve this reservation.
 
+> [!WARNING] 
+> **Very, VERY IMPORTANT**: If you're not wiring the Pi's, you'll face connectivity issues due to ARP black magic on WLAN interfaces—whether you use MetalLB, Cilium L2 announcements, or whatever the hell you run. We'll use Cilium here, and I can confirm I faced this issue where services would stop working randomly and only running a `tcpdump -ni ...` would restore connectivity. That's when I realized I couldn't be the only one, and indeed, more people are [impacted when using Wi-Fi](https://www.reddit.com/r/kubernetes/comments/1ns0g18/doing_k8s_labs_arp_issues_with_metallb/). I'll wire up everything as soon as my network gear gets delivered!
+
 ## 2. Prepping the Pi’s
 
 Use the Raspberry Pi Imager to flash the SD card with a Raspberry Pi OS **Lite** (x64) as we’ll manage the cluster via ssh. We can avoid the **non-lite** version for this project, but feel free to install the base one if you want to play around with a mouse and keyboard. 
