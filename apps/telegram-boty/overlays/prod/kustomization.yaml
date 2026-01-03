@@ -5,8 +5,7 @@ namespace: apps
 
 resources:
   - github.com/fedoteh/telegram-boty//k8s/base?ref=main
-  - sealedsecret-bot-token.yaml
-  - sealedsecret-bot-config.yaml
+  - sealedsecret-bot-secrets.yaml
 
 images:
   - name: fedoteh/telegram-boty
