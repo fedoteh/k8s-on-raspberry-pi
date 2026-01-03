@@ -1,0 +1,24 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pihole-http-redirect
+  namespace: gateway
+spec:
+  hostnames:
+  - pihole.home.fedoteh.com.ar
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: home-gw
+    namespace: gateway
+    sectionName: http
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    filters:
+      - type: RequestRedirect
+        requestRedirect:
+          scheme: https
+          statusCode: 301

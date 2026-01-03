@@ -1,0 +1,20 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: l2-lb-all
+spec:
+  interfaces:
+  - wlan0
+  loadBalancerIPs: true
+  nodeSelector:
+    matchExpressions:
+    - key: node-role.kubernetes.io/control-plane
+      operator: DoesNotExist
+      # Long explanation, but basically we want a different policy to manage pihole deployments as DNS traffic is complicated.
+      # In cloud setups, you'd have a load balancer with a stable IP that handles DNS traffic properly. In a home lab, we could
+      # end up advertising a VIP from a node that is not actually running the pihole pod, causing traffic blackholing.
+      # Cilium's networking should handle these cases and redirect to a different node, but in practice I've seen issues with this.
+      # As a result, we're excluding nodes running pihole from this general L2 announcement policy:
+    - key: pihole
+      operator: NotIn
+      values: ["true"]

@@ -1,0 +1,30 @@
+#  helm repo add mojo2600 https://mojo2600.github.io/pihole-kubernetes/
+#  helm repo update
+#  kubectl -n apps create secret generic pihole-admin \
+#   --from-literal=password='CHANGEME'
+#  helm -n apps install pihole mojo2600/pihole -f values.yaml
+
+admin:
+  existingSecret: "pihole-admin"
+
+nodeSelector:
+  pihole: "true"
+
+serviceDhcp:
+  enabled: false
+
+serviceDns:
+  mixedService: true
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  annotations:
+    lbipam.cilium.io/ips: "192.168.86.11"
+
+
+persistentVolumeClaim:
+  enabled: true
+  storageClass: local-path
+  size: 500Mi
+
+extraEnvVars:
+  TZ: America/Argentina/Cordoba
