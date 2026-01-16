@@ -4,7 +4,7 @@ metadata:
   name: l2-pihole
 spec:
   interfaces:
-  - wlan0
+  - eth0
   loadBalancerIPs: true
   nodeSelector:
     matchLabels:

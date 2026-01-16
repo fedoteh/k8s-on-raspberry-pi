@@ -26,5 +26,9 @@ persistentVolumeClaim:
   storageClass: local-path
   size: 500Mi
 
+DNS1: 192.168.86.1
+DNS2: 8.8.8.8
+
 extraEnvVars:
   TZ: America/Argentina/Cordoba
+  FTLCONF_dns_dnssec: "true"

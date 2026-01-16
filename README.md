@@ -7,4 +7,4 @@ I want to certify CKA so this is my logbook for everything I've done so far. Som
 - Use non-deprecated (or soon to be deprecated) CNIs, e.g., Cilium
 - Use Kubernetes v1.35 (currently just released)
 
-All my manual work was documented in `instructions-manually.md`. Go check it if you're interested. I might add some scripts to avoid manual work later.
+All my manual work was documented in `docs/instructions-manually.md`. Go check it if you're interested. I might add some scripts to avoid manual work later.

@@ -6,7 +6,7 @@
 - Fixed IP addresses for your Pi's. Fiddle around with your router DHCP config to achieve this reservation.
 
 > [!WARNING] 
-> **Very, VERY IMPORTANT**: If you're not wiring the Pi's, you'll face connectivity issues due to ARP black magic on WLAN interfaces—whether you use MetalLB, Cilium L2 announcements, or whatever the hell you run. We'll use Cilium here, and I can confirm I faced this issue where services would stop working randomly and only running a `tcpdump -ni ...` would restore connectivity. That's when I realized I couldn't be the only one, and indeed, more people are [impacted when using Wi-Fi](https://www.reddit.com/r/kubernetes/comments/1ns0g18/doing_k8s_labs_arp_issues_with_metallb/). I'll wire up everything as soon as my network gear gets delivered!
+> **Very, VERY IMPORTANT**: If you're not wiring the Pi's, you'll face connectivity issues due to ARP black magic on WLAN interfaces—whether you use MetalLB, Cilium L2 announcements, or whatever the hell you run. We'll use Cilium here, and I can confirm I faced this issue where services would stop working randomly and only running a `tcpdump -ni ...` would restore connectivity. That's when I realized I couldn't be the only one, and indeed, more people are [impacted when using Wi-Fi](https://www.reddit.com/r/kubernetes/comments/1ns0g18/doing_k8s_labs_arp_issues_with_metallb/). You'll have to run `sudo ip link set wlan0 promisc on` in all the machines; you'll face VIPs that stop responding, leases that you'll need to manually kick, and cilium daemonsets you'll have to re-roll. No point in suffering this. **Please, make yourself a favor and use Ethernet.**
 
 ## 2. Prepping the Pi’s
 
