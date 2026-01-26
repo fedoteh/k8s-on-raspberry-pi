@@ -1,0 +1,11 @@
+# helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+# helm repo update
+
+# kubectl create namespace cattle-system || true
+
+# helm install rancher rancher-latest/rancher \
+#   -n cattle-system \
+#   --set hostname=rancher.home.fedoteh.com.ar \
+#   --set replicas=1 \
+#   --set ingress.enabled=false \
+#   --set tls=external
