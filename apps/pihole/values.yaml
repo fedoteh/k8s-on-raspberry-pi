@@ -16,7 +16,7 @@ serviceDhcp:
 serviceDns:
   mixedService: true
   type: LoadBalancer
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   annotations:
     lbipam.cilium.io/ips: "192.168.86.11"
 
@@ -26,7 +26,7 @@ persistentVolumeClaim:
   storageClass: local-path
   size: 500Mi
 
-DNS1: 192.168.86.1
+DNS1: 1.1.1.1
 DNS2: 8.8.8.8
 
 extraEnvVars:
