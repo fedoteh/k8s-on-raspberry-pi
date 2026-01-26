@@ -15,3 +15,8 @@ defaultSettings:
   storageOverProvisioningPercentage: 200
 
   upgradeChecker: false
+ # Label your nodes like this to make them available for Longhorn:
+ # `kubectl label node pi-002 node.longhorn.io/create-default-disk=true`
+ # Then, the following setting will take care of the rest:
+  createDefaultDiskLabeledNodes: true
+
