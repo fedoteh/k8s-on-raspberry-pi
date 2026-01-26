@@ -1,0 +1,17 @@
+preUpgradeChecker:
+  jobEnabled: false
+
+persistence:
+  defaultClass: false
+  defaultFsType: ext4
+  defaultClassReplicaCount: 2
+
+defaultSettings:
+  defaultDataPath: /var/lib/longhorn
+  defaultReplicaCount: 2
+
+  replicaSoftAntiAffinity: true
+  storageMinimalAvailablePercentage: 15
+  storageOverProvisioningPercentage: 200
+
+  upgradeChecker: false
