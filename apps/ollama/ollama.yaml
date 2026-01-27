@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: apps
+  labels:
+    app: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      initContainers:
+        - name: pull-model
+          image: ollama/ollama:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OLLAMA_MODELS
+              value: /root/.ollama/models
+          command:
+            - sh
+            - -lc
+            - |
+              set -euo pipefail
+              MODEL="llama3.2:3b"
+
+              # If PVC already has something, skip pulling.
+              if [ -d "/root/.ollama/models" ] && find /root/.ollama/models -type f 2>/dev/null | grep -q .; then
+                echo "Models already present in PVC; skipping pull."
+                exit 0
+              fi
+
+              echo "Starting temporary ollama server to pull model: ${MODEL}"
+              ollama serve >/tmp/ollama.log 2>&1 &
+              PID=$!
+
+              # Wait up to 60s for the server to come up
+              for i in $(seq 1 60); do
+                wget -qO- http://127.0.0.1:11434/ >/dev/null 2>&1 && break || true
+                sleep 1
+              done
+
+              # Pull model
+              ollama pull "${MODEL}"
+
+              echo "Stopping temporary ollama server"
+              kill "${PID}"
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+
+      containers:
+        - name: ollama
+          image: ollama/ollama:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 11434
+
+          env:
+            - name: OLLAMA_KEEP_ALIVE
+              value: "30s"
+            - name: OLLAMA_MAX_QUEUE
+              value: "8"
+            - name: OLLAMA_MODELS
+              value: /root/.ollama/models
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "6Gi"
+
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 11434
+            initialDelaySeconds: 20
+            periodSeconds: 20
+
+      volumes:
+        - name: ollama-data
+          persistentVolumeClaim:
+            claimName: ollama-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-pvc
+  namespace: apps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 25Gi
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: apps
+spec:
+  selector:
+    app: ollama
+  ports:
+    - name: http
+      port: 11434
+      targetPort: 11434
+  type: ClusterIP
