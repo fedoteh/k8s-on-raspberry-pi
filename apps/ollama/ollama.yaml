@@ -10,11 +10,15 @@ spec:
   selector:
     matchLabels:
       app: ollama
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: ollama
     spec:
+      terminationGracePeriodSeconds: 60
+      
       initContainers:
         - name: pull-models
           image: ollama/ollama:latest
