@@ -18,7 +18,7 @@ spec:
         app: ollama
     spec:
       terminationGracePeriodSeconds: 60
-      
+
       initContainers:
         - name: pull-models
           image: ollama/ollama:latest
@@ -82,7 +82,7 @@ spec:
           env:
             # Keep the last-used model warm for a long time
             - name: OLLAMA_KEEP_ALIVE
-              value: "168h"
+              value: "-1"
 
             # Raise server-side default context length
             - name: OLLAMA_CONTEXT_LENGTH
