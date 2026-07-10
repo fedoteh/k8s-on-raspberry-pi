@@ -9,4 +9,4 @@ resources:
 
 images:
   - name: fedoteh/telegram-boty
-    newTag: "v0.3.3"
+    newTag: "v0.3.4"
